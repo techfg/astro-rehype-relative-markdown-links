@@ -1,16 +1,16 @@
 import assert from "node:assert/strict";
-import { test, describe } from "node:test";
+import { test, describe, TestContext } from "node:test";
 import { fileURLToPath, pathToFileURL } from "url";
 import path, { dirname } from "path";
 import { rehype } from "rehype";
 import { visit } from "unist-util-visit";
 import esmock from "esmock";
-import { validateOptions as validateOptionsOriginal } from "./options.mjs";
+import { Options, validateOptions as validateOptionsOriginal } from "./options.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-import astroRehypeRelativeMarkdownLinks from "./index.mjs";
+import astroRehypeRelativeMarkdownLinks from "./index.ts";
 
 /*
   NOTE ON ESMOCK USAGE
@@ -31,8 +31,7 @@ import astroRehypeRelativeMarkdownLinks from "./index.mjs";
   - https://github.com/nodejs/node/issues/51164#issuecomment-2034518078
 */
 
-/** @param {Record<string, { currentFilePath?: string }} options */
-function testSetupRehype(options = {}) {
+function testSetupRehype(options: { currentFilePath?: string } = {}) {
   return (tree, file) => {
     visit(tree, "element", () => {
       const fileInHistory = options.currentFilePath
@@ -418,10 +417,10 @@ describe("astroRehypeRelativeMarkdownLinks", () => {
   });
 
   describe("config option validation", () => {
-    const runValidationTest = async (context, options) => {
+    const runValidationTest = async (context: TestContext, options?: Options | null) => {
       const validateOptionsMock = context.mock.fn(validateOptionsOriginal);
-      const astroRehypeRelativeMarkdownLinksMock = await esmock("./index.mjs", {
-        "./options.mjs": {
+      const astroRehypeRelativeMarkdownLinksMock = await esmock("./index.ts", {
+        "./options.ts": {
           validateOptions: validateOptionsMock,
         },
       });

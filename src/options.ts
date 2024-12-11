@@ -2,9 +2,10 @@ import { z } from "zod";
 
 const CollectionBase = z.union([z.literal("name"), z.literal(false)]);
 
-export const CollectionConfigSchema = z.object({
+const CollectionConfigSchema = z.object({
   /**
    * Override the top-level {@link Options#collectionBase collectionBase} option for this collection.
+   * {@link CollectionConfig#base base}
    */
   base: CollectionBase.optional(),
   /**
@@ -17,7 +18,7 @@ export const CollectionConfigSchema = z.object({
   name: z.string().optional(),
 });
 
-export const OptionsSchema = z.object({
+const OptionsSchema = z.object({
   /**
    * Set the directory that Astro will read your site from.
    *
@@ -112,8 +113,24 @@ export const OptionsSchema = z.object({
     .default("ignore"),
 });
 
-/** @type {import('./options.d.ts').ValidateOptions} */
-export const validateOptions = (options) => {
+type OptionsSchemaType = typeof OptionsSchema;
+
+type CollectionConfigSchemaType = typeof CollectionConfigSchema;
+
+interface EffectiveOptions extends z.infer<OptionsSchemaType> {};
+
+export interface EffectiveCollectionOptions
+  extends Omit<EffectiveOptions, "collections"> {
+  collectionName: string;
+};
+
+/** General options */
+export interface Options extends z.input<OptionsSchemaType> {};
+
+/** Collection specific options */
+export interface CollectionConfig extends z.input<CollectionConfigSchemaType> {};
+
+export const validateOptions = (options?: Options | null): EffectiveOptions => {
   const result = OptionsSchema.safeParse(options || {});
   if (!result.success) {
     throw result.error;
@@ -122,8 +139,7 @@ export const validateOptions = (options) => {
   return result.data;
 };
 
-/** @type {import('./options.d.ts').MergeCollectionOptions} */
-export const mergeCollectionOptions = (collectionName, options) => {
+export const mergeCollectionOptions = (collectionName: string, options: EffectiveOptions): EffectiveCollectionOptions => {
   const config = options.collections[collectionName] || {};
   const { base = options.collectionBase, name = collectionName } = config;
   return {

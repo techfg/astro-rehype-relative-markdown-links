@@ -46,7 +46,7 @@ In the example below, `astro dev` will start your server at `/docs`.
 
 #### Defined in
 
-[src/options.mjs:86](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.mjs#L86)
+[src/options.ts:87](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L87)
 
 ***
 
@@ -63,7 +63,7 @@ Use `false` when you are treating your content collection as if it were located 
 set this value and the default of `"name"` will be used.
 
 Note that this is a top-level option and will apply to all content collections.  If you have multiple content collections and want the behavior to be different on a per content collection basis, add the collection(s) to
-the [collections](Options.md#collections) option and provide a value for the [base](CollectionConfig.md#base) property.
+the [collections](Options.md#collections) option and provide a value for the base property.
 
 #### Default
 
@@ -88,7 +88,7 @@ the [collections](Options.md#collections) option and provide a value for the [ba
 
 #### Defined in
 
-[src/options.mjs:55](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.mjs#L55)
+[src/options.ts:56](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L56)
 
 ***
 
@@ -126,7 +126,7 @@ configuration where applicable.
 
 #### Defined in
 
-[src/options.mjs:73](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.mjs#L73)
+[src/options.ts:74](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L74)
 
 ***
 
@@ -160,7 +160,7 @@ The value can be either an absolute file system path or a path relative to the p
 
 #### Defined in
 
-[src/options.mjs:34](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.mjs#L34)
+[src/options.ts:35](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L35)
 
 ***
 
@@ -206,4 +206,4 @@ When set to `"ignore"` (the default), the following will occur:
 
 #### Defined in
 
-[src/options.mjs:110](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.mjs#L110)
+[src/options.ts:111](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L111)

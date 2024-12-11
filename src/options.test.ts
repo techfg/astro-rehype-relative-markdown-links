@@ -1,12 +1,11 @@
 import { describe, test } from "node:test";
-import { mergeCollectionOptions, validateOptions } from "./options.mjs";
+import { mergeCollectionOptions, validateOptions, type Options, type CollectionConfig } from "./options.js";
 import assert from "node:assert";
+import { z } from "zod";
 
-/** @type {import('./options.d.ts').CollectionConfig} */
-const defaultCollectionConfig = {};
+const defaultCollectionConfig: CollectionConfig = {};
 
-/** @type {import('./options.d.ts').Options} */
-const defaultOptions = {
+const defaultOptions: Options = {
   srcDir: "./src",
   trailingSlash: "ignore",
   collectionBase: "name",
@@ -14,13 +13,13 @@ const defaultOptions = {
 };
 
 describe("validateOptions", () => {
-  const expectsZodError = (options, errorCode) => {
+  const expectsZodError = (options: any, errorCode: string) => {
     assert.throws(
       () => validateOptions(options),
-      (err) => {
+      (err: any) => {
         assert.strictEqual(err.name, "ZodError");
         assert.strictEqual(
-          err.issues.some((i) => i.code === errorCode),
+          err instanceof z.ZodError && err.issues.some((i) => i.code === errorCode),
           true,
         );
         return true;
@@ -28,12 +27,12 @@ describe("validateOptions", () => {
     );
   };
 
-  const expectsValidOptions = (options, expected) => {
+  const expectsValidOptions = (options: Options | null | undefined, expected: Options) => {
     const actual = validateOptions(options);
     assert.deepStrictEqual(actual, expected);
   };
 
-  const expectsValidOption = (options, option, expected) => {
+  const expectsValidOption = (options: Options | null | undefined, option: keyof Options, expected: any) => {
     const actual = validateOptions(options);
     assert.deepStrictEqual(actual[option], expected);
   };
@@ -108,7 +107,10 @@ describe("validateOptions", () => {
 
       test("should contain collection defaults when collection contains invalid collection key", () => {
         expectsValidOption(
-          { collections: { docs: { thisdoesnotexistonschema: "foo" } } },
+          { collections: { docs: { 
+            //@ts-ignore
+            thisdoesnotexistonschema: "foo" 
+          } } },
           "collections",
           { docs: defaultCollectionConfig },
         );
@@ -129,17 +131,17 @@ describe("validateOptions", () => {
 
     describe("collections:base", () => {
       test("should contain base name for collection when base name specified", () => {
-        const expected = { docs: { base: "name" } };
+        const expected:Record<string, CollectionConfig> = { docs: { base: "name" } };
         expectsValidOption({ collections: expected }, "collections", expected);
       });
 
       test("should contain base false for collection when base false specified", () => {
-        const expected = { docs: { base: false } };
+        const expected:Record<string, CollectionConfig> = { docs: { base: false } };
         expectsValidOption({ collections: expected }, "collections", expected);
       });
 
       test("should contain multiple collections when multiple collections specified", () => {
-        const expected = {
+        const expected:Record<string, CollectionConfig> = {
           docs: { base: false },
           newsletter: { base: "name" },
         };
@@ -297,9 +299,14 @@ describe("validateOptions", () => {
 });
 
 describe("mergeCollectionOptions", () => {
+    const defaultOptions: Required<Pick<Options, "srcDir" | "trailingSlash">> = {
+        srcDir: '',
+        trailingSlash: 'always'
+    }
   describe("collectionBase", () => {
     test("collectionBase should be name when top-level name and no collection override", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: {},
       });
@@ -308,6 +315,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should name when top-level false and collection override name", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: false,
         collections: { docs: { base: "name" } },
       });
@@ -316,6 +324,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be name when top-level name and collection override name", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: { docs: { base: "name" } },
       });
@@ -324,6 +333,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be name when top-level name and no collection override matches collection name", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: { fake: { base: false } },
       });
@@ -332,6 +342,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be false when top-level false and no collection override", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: false,
         collections: {},
       });
@@ -340,6 +351,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be false top-level name and collection override false", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: { docs: { base: false } },
       });
@@ -348,6 +360,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be false when top-level false and collection override false", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: false,
         collections: { docs: { base: false } },
       });
@@ -356,6 +369,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionBase should be false when top-level false and no collection override matches collection name", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: false,
         collections: { fake: { base: "name" } },
       });
@@ -366,6 +380,8 @@ describe("mergeCollectionOptions", () => {
   describe("collectionName", () => {
     test("collectionName should contain name from parameter when no collection override", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
+        collectionBase: "name",
         collections: {},
       });
       assert.equal(actual.collectionName, "docs");
@@ -373,6 +389,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionName should contain name from collection override", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: { docs: { name: "my-docs" } },
       });
@@ -381,6 +398,7 @@ describe("mergeCollectionOptions", () => {
 
     test("collectionName should contain name from parameter when no collection overrides matches collection name", () => {
       const actual = mergeCollectionOptions("docs", {
+        ...defaultOptions,
         collectionBase: "name",
         collections: { fake: { name: "my-docs" } },
       });

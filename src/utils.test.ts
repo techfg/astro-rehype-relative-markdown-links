@@ -11,7 +11,8 @@ import {
   resolveSlug,
   applyTrailingSlash,
   resolveCollectionBase,
-} from "./utils.mjs";
+} from "./utils.js";
+import { EffectiveCollectionOptions } from "./options.js";
 
 describe("replaceExt", () => {
   test("replaces extension with another extension", () => {
@@ -39,6 +40,7 @@ describe("replaceExt", () => {
   });
 
   test("returns arg if not string", () => {
+    //@ts-ignore
     const actual = replaceExt(["foo.js"], ".md");
 
     assert.deepStrictEqual(actual, ["foo.js"]);
@@ -71,6 +73,7 @@ describe("isValidRelativeLink", () => {
   });
 
   test("return false if link does not exist", () => {
+    //@ts-ignore
     const actual = isValidRelativeLink(null);
 
     assert.equal(actual, false);
@@ -191,6 +194,7 @@ describe("resolveSlug", () => {
   });
 
   test("throws exception when no valid slug", () => {
+    //@ts-ignore
     assert.throws(() => resolveSlug());
   });
 
@@ -287,12 +291,14 @@ describe("isValidFile", () => {
   });
 
   test("return false if link is null", () => {
+    //@ts-ignore
     const actual = isValidFile(null);
 
     assert.equal(actual, false);
   });
 
   test("return false if link is undefined", () => {
+    //@ts-ignore
     const actual = isValidFile();
 
     assert.equal(actual, false);
@@ -424,7 +430,7 @@ describe("resolveCollectionBase", () => {
     test("should return empty string when collectionBase is false", () => {
       const actual = resolveCollectionBase({
         collectionBase: false,
-        collectionName: undefined,
+        collectionName: "docs",
       });
       assert.equal(actual, "");
     });

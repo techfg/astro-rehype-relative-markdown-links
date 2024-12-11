@@ -32,6 +32,8 @@ jobs:
         run: rm -rf docs
       - name: Install Dependencies
         run: yarn --immutable
+      - name: Build
+        run: yarn build
       - name: Publish
         run: yarn npm publish
         env:

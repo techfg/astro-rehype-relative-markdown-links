@@ -16,17 +16,22 @@ import {
   shouldProcessFile,
   getMatter,
   resolveCollectionBase,
-} from "./utils.mjs";
-import { validateOptions, mergeCollectionOptions } from "./options.mjs";
+} from "./utils.js";
+import { validateOptions, mergeCollectionOptions, type Options, type CollectionConfig } from "./options.js";
+import type { Plugin } from "unified";
+import type { Root } from "hast";
+
+export type { Options, CollectionConfig };
 
 // This package makes a lot of assumptions based on it being used with Astro
 
 const debug = debugFn("astro-rehype-relative-markdown-links");
 
 /**
- * @type {import('unified').Plugin<[(import('./options.d.ts').Options | null | undefined)?], import('hast').Root>}
+ * Rehype plugin for Astro to add support for transforming relative links in MD and MDX files into their final page paths.
+ * @see {@link Options}
  */
-function astroRehypeRelativeMarkdownLinks(opts) {
+const astroRehypeRelativeMarkdownLinks: Plugin<[(Options | null | undefined)?], Root> = (opts) => {
   const options = validateOptions(opts);
 
   return (tree, file) => {
@@ -34,13 +39,13 @@ function astroRehypeRelativeMarkdownLinks(opts) {
       if (
         node.type !== "element" ||
         node.tagName !== "a" ||
-        typeof node.properties.href !== "string" ||
-        !node.properties.href
+        typeof node.properties["href"] !== "string" ||
+        !node.properties["href"]
       ) {
         return;
       }
 
-      const nodeHref = node.properties.href;
+      const nodeHref = node.properties["href"];
       const [urlPathPart, urlQueryStringAndFragmentPart] =
         splitPathFromQueryAndFragment(nodeHref);
 
@@ -49,6 +54,10 @@ function astroRehypeRelativeMarkdownLinks(opts) {
       }
 
       const currentFile = file.history[0];
+      if (!currentFile) {
+        // TODO: Should we log throw here or log an error/warning since its an unexpected state/outcome?
+        return;
+      }
       const currentFileParsed = path.parse(currentFile);
       const currentFileDirectory = currentFileParsed.dir;
 
@@ -104,6 +113,10 @@ function astroRehypeRelativeMarkdownLinks(opts) {
       const collectionName = path
         .dirname(relativeToContentPath)
         .split(FILE_PATH_SEPARATOR)[0];
+      if (!collectionName) {
+        // TODO: Should we log throw here or log an error/warning since its an unexpected state/outcome?
+        return;
+      }
       // flatten options merging any collection overrides
       const collectionOptions = mergeCollectionOptions(collectionName, options);
       if (
@@ -194,7 +207,7 @@ function astroRehypeRelativeMarkdownLinks(opts) {
       debug("URL file resolved slug               : %s", resolvedSlug);
       debug("Final URL                            : %s", webPathFinal);
 
-      node.properties.href = webPathFinal;
+      node.properties["href"] = webPathFinal;
     });
   };
 }

@@ -23,4 +23,4 @@ Rehype plugin for Astro to add support for transforming relative links in MD and
 
 ## Defined in
 
-[src/index.d.ts:11](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/index.d.ts#L11)
+[src/index.ts:34](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/index.ts#L34)
