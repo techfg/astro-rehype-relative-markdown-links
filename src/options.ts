@@ -5,7 +5,6 @@ const CollectionBase = z.union([z.literal("name"), z.literal(false)]);
 const CollectionConfigSchema = z.object({
   /**
    * Override the top-level {@link Options#collectionBase collectionBase} option for this collection.
-   * {@link CollectionConfig#base base}
    */
   base: CollectionBase.optional(),
   /**

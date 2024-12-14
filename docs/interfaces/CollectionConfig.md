@@ -22,7 +22,6 @@ Collection specific options
 > `optional` **base**: `false` | `"name"`
 
 Override the top-level [collectionBase](Options.md#collectionbase) option for this collection.
-base
 
 #### Inherited from
 
@@ -30,7 +29,7 @@ base
 
 #### Defined in
 
-[src/options.ts:10](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L10)
+[src/options.ts:9](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L9)
 
 ***
 
@@ -50,4 +49,4 @@ When not specified, the name of the collection from disk will be used where appl
 
 #### Defined in
 
-[src/options.ts:18](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L18)
+[src/options.ts:17](https://github.com/techfg/astro-rehype-relative-markdown-links/blob/main/src/options.ts#L17)
